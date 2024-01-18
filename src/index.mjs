@@ -34,7 +34,6 @@ app.get("/api/users", (request, response) => {
         return response.send(
             mockUsers.find((user) => user[filter].includes(value))
         );
-
     return response.send(mockUsers);
 })
 
@@ -52,11 +51,8 @@ app.get("/api/users/:id", (request, response) => {
     const parsedId = parseInt(request.params.id);
     if(isNaN(parsedId))
         return response.status(400).send({msg: "Bad Request. Invalid ID."});
-
     const findUser = mockUsers.find((user) => user.id === parsedId);
-
     if (!findUser) return response.sendStatus(400)
-
     return response.send(findUser);
 })
 
@@ -70,17 +66,25 @@ app.put("/api/users/:id", (request, response) => {
         body, 
         params: {id}
     } = request
-
     const parsedId = parseInt(id);
-
     if(isNaN(parsedId)) return response.sendStatus(400) //400 - Bad Request
-
     const findUserIndex = mockUsers.findIndex((user) => user.id === parsedId);
-
     if(findUserIndex === -1) return response.sendStatus(404) //404 - Not Found
-
     mockUsers[findUserIndex] = {id: parsedId, ...body}
+    return response.sendStatus(200)
+})
 
+// PATCH Request - update record partially
+app.patch("/api/users/:id", (request, response) => {
+    const { 
+        body, 
+        params: {id}
+    } = request
+    const parsedId = parseInt(id);
+    if(isNaN(parsedId)) return response.sendStatus(400) //400 - Bad Request
+    const findUserIndex = mockUsers.findIndex((user) => user.id === parsedId);
+    if(findUserIndex === -1) return response.sendStatus(404) //404 - Not Found
+    mockUsers[findUserIndex] = {...mockUsers[findUserIndex], ...body}
     return response.sendStatus(200)
 })
 
