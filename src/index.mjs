@@ -1,4 +1,11 @@
 import express from "express";
+// query - validates endpoint query parameters on requests
+// validationResults - function that returns validation results
+// body - validates request body
+// matchedData - this gives you all the validated data
+// checkSchema - gives a validation schema
+import { query, validationResult, body, matchedData, checkSchema } from "express-validator"
+import { createUserValidationSchema, getUsersValidationSchema } from "./utils/validationSchema.mjs" 
 
 const app = express();
 
@@ -71,9 +78,18 @@ app.get(
 );
 
 // Query parameter
-app.get("/api/users", (request, response) => {
-    console.log(request.query); //localhost/api/users?filter=username&value='an'
-    //destructure the query parameters
+// query is a middleware from express-validator
+app.get(
+    "/api/users",
+    //Handling validation of query parameters
+    checkSchema(getUsersValidationSchema), 
+    (request, response) => {
+    // Handling Validation Results
+    const result = validationResult(request); //get the validation results from the given request
+    console.log(result);
+
+    //console.log(request.query); //localhost/api/users?filter=username&value='an'
+    //destructure the query parameters of the url address
     const {
         query: {filter, value},
     } = request;
@@ -101,9 +117,21 @@ app.use(loggingMiddleWare, (request, response, next) => {
  })
 
 // Post Request with pay load
-app.post("/api/users", (request, response) => {
-    const { body } = request;
-    const newUser = {id: mockUsers[mockUsers.length - 1].id + 1, ...body };
+app.post(
+    "/api/users",
+    // Handling Validation for more than one body field
+    checkSchema(createUserValidationSchema),
+    (request, response) => {
+    //Handling validation results
+    const result = validationResult(request)
+    console.log(result)
+
+    if(!result.isEmpty())
+        return response.status(400).send({ errors: result.array()})
+    
+    //this is data returned after validating body fields
+    const data = matchedData(request)
+    const newUser = {id: mockUsers[mockUsers.length - 1].id + 1, ...data };
     mockUsers.push(newUser);
     return response.status(201).send(newUser); // 201 - resource created
 })
@@ -140,4 +168,6 @@ app.delete("/api/users/:id", resolveIndexByUserId, (request, response) => {
 app.get("/api/products", (request, response) => {
     response.send([{id: 123, name: "Chicken Breast", price: 123.9}]);
 })
+
+
 
