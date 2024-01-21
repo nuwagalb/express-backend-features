@@ -19,6 +19,14 @@ router.get(
     checkSchema(getUsersValidationSchema), 
     (request, response) => {
     // Handling Validation Results
+    console.log(request.session.id)
+    request.sessionStore.get(request.session.id, (err, sessionData) => {
+        if(err) {
+            console.log(err);
+            throw err
+        }
+        console.log(sessionData);
+    })
     const result = validationResult(request); //get the validation results from the given request
     console.log(result);
 
