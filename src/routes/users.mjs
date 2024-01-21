@@ -94,7 +94,7 @@ router.delete("/api/users/:id", resolveIndexByUserId, (request, response) => {
 })
 
 
-export default router
+export default router;
 
 /** Notes from the Tutorial */
 

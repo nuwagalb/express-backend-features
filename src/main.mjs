@@ -2,7 +2,8 @@ import express from "express";
 import routes from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { mockUsers } from "./utils/constants.mjs";
+import passport from "passport";
+import "./strategies/local-strategy.mjs"
 
 const app = express();
 
@@ -24,63 +25,19 @@ app.use(session({
     }
 }))
 
+//passport middleware for authentication
+app.use(passport.initialize());
+app.use(passport.session());
+
 //users router
 app.use(routes)
-
-app.get("/", (request, response) => {
-        console.log(request.session.id)
-        request.session.visited = true;
-        response.cookie("hello", "world", { maxAge: 60000 * 60 * 2, signed: true}) //1 minute = 60,000 milliseconds
-        response.status(201).send({msg: 'Hello!'});
-    }
-);
-
-app.post("/api/auth", (request, response) => {
-    const { 
-        body: { username, password } 
-    } = request;
-
-    const findUser = mockUsers.find((user) => user.username === username);
-    if(!findUser || findUser.password !== password)
-        return response.status(401).send({ msg: "BAD CREDENTIALS" });
-    
-    request.session.user = findUser;
-    return response.status(200).send(findUser)
-});
-
-app.get("/api/auth/status", (request, response) => {
-    request.sessionStore.get(request.sessionID, (err, session) => {
-        console.log(session)
-    });
-    return request.session.user 
-        ? response.status(200).send(request.session.user)
-        : response.status(401).send({ msg: "Not Authenticated" })
-})
-
-app.post("/api/cart", (request, response) => {
-    if (!request.session.user) return response.sendStatus(401);
-    const { body: item } = request;
-    const { cart } = request.session;
-
-    if (cart) {
-        cart.push(item)
-    } else {
-        request.session.cart = [item];
-    }
-    return response.status(201).send(item);
-
-})
-
-app.get("/api/cart", (request, response)=> {
-    if (!request.session.user) return response.sendStatus(401)
-    return response.send(request.session.cart ?? [])
-});
 
 app.listen(PORT, () => {
     console.log(`Running on Port ${PORT}`);
 });
 
 /* 
+   Express Tool Used: cookie-parser
    Cookies: unique pieces of data that the server sends to the web browser
    -> http is stateless that's why cookies are important so that they can
       keep track of important data that the server and clients who use http
@@ -100,6 +57,7 @@ app.listen(PORT, () => {
 
 
 /*
+  -> Express tool used: express-session
   -> Sessions represent the duration of the user on the website/server
   -> By default http is stateless, we don't know who is making requests to our server so we
      need to be able to track requests and know where they are coming from
@@ -123,5 +81,24 @@ app.listen(PORT, () => {
       id                                        sent to the web browser
 
 */
+
+/**
+ * Express Tool Used: passport, passport-local, passport-facebook
+ * 
+ * Steps
+ * 1. install passport, pasport-local, passport-facebook package
+ * 2. import passport
+ * 3. If using passport and sessions, then ensure session middleware has
+ *    already been installed
+ * 4. initialize passport as a middleware for the application
+ * 5. assign available session to passport
+ * 6. configure a passport strategy
+ *    -> serialize passport user using unique value like user_id to add them to the session
+ *    -> deserialize passport user using unique value that was passed (user_id) to add
+ *       user that was added to session using seriaalize onto the request object itself
+ * 7. define endpoints that will use passport
+ * 8. on this endpoint, add passport authentication strategy as a middleware 
+ * 
+ */
 
 
