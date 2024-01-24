@@ -18,6 +18,9 @@ export const createUserValidationSchema = {
     },
     displayName: {
         notEmpty: true //since it has no options that will be passed to it
+    },
+    password: {
+        notEmpty: true
     }
 };
 

@@ -3,11 +3,15 @@ import routes from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
-import "./strategies/local-strategy.mjs"
+import mongoose from "mongoose";
+import "./strategies/local-strategy.mjs";
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+mongoose
+    .connect("mongodb://localhost/express_backend_app")
+    .then(() => console.log("Connected to Database"))
+    .catch((err) => console.log(`Error: ${err}`))
 
 //Global MiddleWare
 app.use(express.json());
@@ -31,6 +35,8 @@ app.use(passport.session());
 
 //users router
 app.use(routes)
+
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Running on Port ${PORT}`);
@@ -97,8 +103,36 @@ app.listen(PORT, () => {
  *    -> deserialize passport user using unique value that was passed (user_id) to add
  *       user that was added to session using seriaalize onto the request object itself
  * 7. define endpoints that will use passport
- * 8. on this endpoint, add passport authentication strategy as a middleware 
+ * 8. on this endpoint, add passport authentication strategy as a middleware
  * 
+ * Notes:
+ * -> Don't forget to hash passwords
+ * ->  
+ * 
+ */
+
+/**
+ * Databases: MongoDB, Node: Mongoose
+ * 
+ * 1. install mongodb on local/cloud
+ * 2. install mongoose node package
+ * 3. import mongoose
+ * 4. connect to mongoose db(host:port:db_name)
+ * 5. set up a mongoose schema for your entities
+ * 6. compile the schema into a model
+ * 7. perform database operations like (findOne, findById, etc) on the 
+ *    model to query for different documents within your given collection 
+ */
+
+/**
+ * General Development Flow
+ * 
+ * 1. Receive request when endpoint is visited
+ * 2. Extract data from request
+ * 3. Perform operations (like data validation) on extracted data from 
+ *    request or perform operations on the request itself (like checking if it has a session
+ *    attached to it)
+ * 4. Return a response for the the visited endpoint
  */
 
 
