@@ -3,6 +3,7 @@ import { mockUsers } from "../utils/constants.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
 import { createUserValidationSchema, getUsersValidationSchema } from "../utils/validationSchema.mjs";
 import { resolveIndexByUserId} from "../utils/middlewares.mjs";
+import { hashPassword } from "../utils/helpers.mjs";
 import { User } from "../mongoose/schemas/user.mjs";
 
 //the router is a some sort of mini app within express,
@@ -25,6 +26,9 @@ router.post(
     
     const data = matchedData(request);
     console.log(data);
+    data.password = await hashPassword(data.password);
+    console.log(data);
+    
     const newUser = new User(data);
     try {
         const savedUser = await newUser.save();

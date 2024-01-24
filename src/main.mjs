@@ -107,7 +107,14 @@ app.listen(PORT, () => {
  * 
  * Notes:
  * -> Don't forget to hash passwords
- * ->  
+ * -> install encrypting/decrypting package (bcrypt)
+ * -> create file to use for the hashing process
+ * -> import bcrypt
+ *    - create SaltRounds
+ * -> create function to hash the password using the bcrypt
+ *    - generate a salt and pass it saltRounds
+ *    - use bcrypt to hash the password (use async version)
+ * 
  * 
  */
 
