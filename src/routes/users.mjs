@@ -6,7 +6,7 @@ import { resolveIndexByUserId} from "../utils/middlewares.mjs";
 import { hashPassword } from "../utils/helpers.mjs";
 import { User } from "../mongoose/schemas/user.mjs";
 
-//the router is a some sort of mini app within express,
+//the router is some sort of mini app within express,
 //you can register various routes on it
 //it also needs to be registred to express as well after
 //registering routes on it
@@ -16,19 +16,20 @@ const router = Router();
 //ROUTES WITH PERSISTENT DATA (DATABASES)
 router.post(
     "/api/db/users",
+    //Validate fields on the incoming request
     checkSchema(createUserValidationSchema),
     async (request, response) => {
     // Handling validation results
     const results = validationResult(request);
-
     if (!results.isEmpty()) 
         return response.status(400).send(results.array());
     
+    // Working with validated data
     const data = matchedData(request);
     console.log(data);
     data.password = await hashPassword(data.password);
     console.log(data);
-    
+
     const newUser = new User(data);
     try {
         const savedUser = await newUser.save();
@@ -37,6 +38,19 @@ router.post(
         console.log(error);
         return response.sendStatus(400);
     }
+});
+
+router.get("/api/db/users", (request, response) => {
+    console.log(request.session.id);
+    request.sessionStore.get(request.session.id, (err, sessionData) => {
+        console.log(`Inside Session Data`);
+        if(err) {
+            console.log(err);
+            throw err;
+        }
+        console.log(sessionData);
+    })
+    return response.sendStatus(200);
 });
 
 // ROUTES WITH NON PERSISTENT DATA (IN MEMORY OPERATIONS)
@@ -54,6 +68,7 @@ router.get(
             console.log(err);
             throw err
         }
+        console.log(`Inside session store`);
         console.log(sessionData);
     })
     const result = validationResult(request); //get the validation results from the given request
