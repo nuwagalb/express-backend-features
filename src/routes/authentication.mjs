@@ -4,7 +4,23 @@ import passport from "passport";
 
 const router = Router();
 
-//Authentication using Passport and Sessions
+//Authentication using OAuth2 with passport and discord strategy
+router.get(
+    "/api/auth/discord",
+    passport.authenticate("discord")
+)
+
+router.get(
+    "/api/auth/discord/redirect",
+    passport.authenticate("discord"),
+    (request, response) => {
+        console.log(request.session);
+        console.log(request.user);
+        response.sendStatus(200);
+    }
+)
+
+//Authentication using Passport and Sessions with local strategy
 router.post(
     "/api/passport/auth",
     passport.authenticate('local'),

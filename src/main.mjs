@@ -5,7 +5,8 @@ import session from "express-session";
 import passport from "passport";
 import mongoose from "mongoose";
 import MongoStore from "connect-mongo";
-import "./strategies/local-strategy.mjs";
+//import "./strategies/local-strategy.mjs";
+import "./strategies/discord-strategy.mjs";
 
 const app = express();
 
@@ -46,6 +47,18 @@ app.listen(PORT, () => {
     console.log(`Running on Port ${PORT}`);
 });
 
+/**
+ * General Development Flow
+ * 
+ * 1. Receive request when endpoint is visited
+ * 2. Extract data from request
+ * 3. Perform operations (like data validation) on extracted data from 
+ *    request or perform operations on the request itself (like checking if it has a session
+ *    attached to it)
+ * 4. Return a response for the the visited endpoint
+ * 
+ */
+
 /* 
    Express Tool Used: cookie-parser
    Cookies: unique pieces of data that the server sends to the web browser
@@ -64,8 +77,6 @@ app.listen(PORT, () => {
     server using any route associated                   sent from the browser
     with the server 
 */
-
-
 
 /*
   -> Express tool used: express-session
@@ -147,15 +158,52 @@ app.listen(PORT, () => {
  */
 
 /**
- * General Development Flow
+ * OAUTH2 Authentication using passport.js
+ * -> use third party providers to log into your application
+ * -> you can use different third party's such as Discord, Facebook, Github, etc
+ * -> figure out from developer documentation how to create an actual oauth application
+ * -> Discord Details
+ *    - client Secret: f9UP4HD0EtsihRV-b0Cr-1VrtdIlgLOS
+ *    - client ID: 1200351307010150510
+ *    - Discord redirect url: http://localhost:3000/api/auth/discord/redirect
+ * -> Install passport strategy that matches your authentication app (passport-discord)
+ * -> Import it into our app
+ * -> Create a file to implement the discord strategy using passport
  * 
- * 1. Receive request when endpoint is visited
- * 2. Extract data from request
- * 3. Perform operations (like data validation) on extracted data from 
- *    request or perform operations on the request itself (like checking if it has a session
- *    attached to it)
- * 4. Return a response for the the visited endpoint
- * 
+ * Flow of App
+ * - (1)click route on our express app -> (2)express app redirects us to discord for
+ *                                           authorization 
+ *                                               |
+ *   (3)we click discord authorization       <----
+ *      and are redirected to our express
+ *      app using this specific route that
+ *      is in our app but also defined in
+ *      discord itself
  */
+
+/**
+ *  UNIT TESTING: using JEST (a testing framework for javascript made by meta)
+ *  -> use bable transpiler to transpile es6 javascript code to older versions of javascript
+ *  -> install devedependencies @babel/core, @babel/node @babel/preset-env and jest as well
+ *  -> create a .babelrc file and add configuration for the present env for babel
+ *  -> set up a jest config file (npm init jest@latest)
+ *     - Edit the default transform property inside the jest.config.mjs file and pass it an
+ *       object. The transform property looks for the source files that match a regular expression
+ *       and transforms them into a form that jest can actually run.babel-jest is the tool
+ *       used for transformation of .mjs files to older javascript files
+ *     - Edit the moduleFileExtensions property as well: 
+ *  -> Ensure that the test script in package.json file is running the "jest" command
+ *  -> Create a __tests__ folder for our test files: this is a standard naming convention
+ *  -> Name test files with similar names as the code they'll be testing: i.e if you have a
+ *     users.mjs file that will be tested, name your file: users.test.js or users.spec.js
+ *  -> configure jest globally
+ *     - install jest types (npm i -D @types/jest)
+ *     - create a jsconfig.json file
+ *     - set typeAcquisition: {
+ *          include: ["jest"]
+ *       }     
+ */
+
+
 
 

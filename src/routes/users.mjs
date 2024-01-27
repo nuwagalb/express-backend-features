@@ -5,6 +5,8 @@ import { createUserValidationSchema, getUsersValidationSchema } from "../utils/v
 import { resolveIndexByUserId} from "../utils/middlewares.mjs";
 import { hashPassword } from "../utils/helpers.mjs";
 import { User } from "../mongoose/schemas/user.mjs";
+//import { getUserByIdHandler } from "../handlers/users.mjs";
+
 
 //the router is some sort of mini app within express,
 //you can register various routes on it
@@ -90,7 +92,7 @@ router.get(
 
 // Route Parameter - GET
 router.get("/api/users/:id", resolveIndexByUserId, (request, response) => {
-    const { findUserIndex } = request
+    const { findUserIndex } = request;
     const findUser = mockUsers[findUserIndex];
     if (!findUser) return response.sendStatus(404)
     return response.send(findUser);
