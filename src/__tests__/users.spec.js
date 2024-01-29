@@ -204,3 +204,14 @@ describe("create users", () => {
  *    that the function gives the expected outcome
  * -> test suites/ test closures
  */
+
+/**
+ * INTEGRATION AND END TO END TEST
+ * -> Integration tests test flows in your application i.e creating a user and
+ *    ensuring that this user can log into your application
+ * -> Integration tests might be better in some scenarios because all you need
+ *    to focus on is that things operations in your application work as expected
+ *    i.e that if a given api endpoint is called, then it works as expected. It 
+ *    is alot easier than the unit tests in some instances
+ * 
+ */

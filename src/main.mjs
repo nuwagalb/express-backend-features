@@ -1,51 +1,22 @@
-import express from "express";
-import routes from "./routes/index.mjs";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import passport from "passport";
 import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
-//import "./strategies/local-strategy.mjs";
-import "./strategies/discord-strategy.mjs";
+import { createApp } from "./createApp.mjs";
 
-const app = express();
-
+//create connection to mongodb
 mongoose
     .connect("mongodb://localhost/express_backend_app")
     .then(() => console.log("Connected to Database"))
     .catch((err) => console.log(`Error: ${err}`))
 
-//Global MiddleWare
-app.use(express.json());
+//create app with all it's functionalities
+const app = createApp();
 
-//cookie
-app.use(cookieParser("uvwxyz"));
-
-//session
-app.use(session({
-    secret: "current session password",
-    saveUninitialized: false,
-    resave: false,
-    cookie: {
-        maxAge: 60000 * 60 * 2
-    },
-    store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-    })
-}))
-
-//passport middleware for authentication
-app.use(passport.initialize());
-app.use(passport.session());
-
-//users router
-app.use(routes)
-
+//serve app so that it can be accessed
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Running on Port ${PORT}`);
 });
+
 
 /**
  * General Development Flow
@@ -202,6 +173,22 @@ app.listen(PORT, () => {
  *     - set typeAcquisition: {
  *          include: ["jest"]
  *       }     
+ */
+
+/**
+ *  INTEGRATION AND END TO END TESTS: using supertest (Node.js library for integration testing 
+ *  purposes)
+ *  -> install supertest (npm i -D supertest) //supertest works well with jest
+ *  -> add a new test script to the package.json file: (test:e2e) for end to end
+ *     integration purposes
+ *     - "test:e2e": "jest --testPathPattern=src/e2e"
+ *  -> export our main express application (app) so that all the endpoints and middlewares
+ *     registered on it can be accessible for testing
+ * 
+ *  Note: In summary, integration tests focus on the collaboration between components, while 
+ *  end-to-end tests focus on the entire application flow from the user's perspective. Both 
+ *  types of tests are valuable and serve different purposes in ensuring the quality and 
+ *  reliability of a software application   
  */
 
 
