@@ -1,0 +1,13 @@
+// Enable babel to get current environment it will be running in
+{
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "node": "current"
+                }
+            }
+        ]
+    ]
+}

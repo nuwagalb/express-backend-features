@@ -25,6 +25,8 @@ passport.deserializeUser(async (id, done) => {
 });
 
 export default passport.use(
+    //TO DO:
+    // -> unit test this function
     new Strategy(async (username, password, done) => {
         console.log(`Username: ${username}`);
         console.log(`Password: ${password}`)

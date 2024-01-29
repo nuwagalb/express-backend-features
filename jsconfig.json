@@ -1,0 +1,6 @@
+//Enable global access of JEST functions
+{
+    "typeAcquisition": {
+        "include": ["jest"]
+    }
+}

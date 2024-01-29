@@ -3,9 +3,8 @@ import { mockUsers } from "../utils/constants.mjs";
 import { validationResult, matchedData, checkSchema } from "express-validator";
 import { createUserValidationSchema, getUsersValidationSchema } from "../utils/validationSchema.mjs";
 import { resolveIndexByUserId} from "../utils/middlewares.mjs";
-import { hashPassword } from "../utils/helpers.mjs";
-import { User } from "../mongoose/schemas/user.mjs";
-//import { getUserByIdHandler } from "../handlers/users.mjs";
+import { getUserByIdHandler } from "../handlers/users.mjs";
+import { createUserHandler } from "../handlers/users.mjs";
 
 
 //the router is some sort of mini app within express,
@@ -20,27 +19,8 @@ router.post(
     "/api/db/users",
     //Validate fields on the incoming request
     checkSchema(createUserValidationSchema),
-    async (request, response) => {
-    // Handling validation results
-    const results = validationResult(request);
-    if (!results.isEmpty()) 
-        return response.status(400).send(results.array());
-    
-    // Working with validated data
-    const data = matchedData(request);
-    console.log(data);
-    data.password = await hashPassword(data.password);
-    console.log(data);
-
-    const newUser = new User(data);
-    try {
-        const savedUser = await newUser.save();
-        return response.status(201).send(savedUser);
-    } catch (error) {
-        console.log(error);
-        return response.sendStatus(400);
-    }
-});
+    //handle (request,response) => {} callback function
+    createUserHandler);
 
 router.get("/api/db/users", (request, response) => {
     console.log(request.session.id);
@@ -91,12 +71,7 @@ router.get(
 });
 
 // Route Parameter - GET
-router.get("/api/users/:id", resolveIndexByUserId, (request, response) => {
-    const { findUserIndex } = request;
-    const findUser = mockUsers[findUserIndex];
-    if (!findUser) return response.sendStatus(404)
-    return response.send(findUser);
-});
+router.get("/api/users/:id", resolveIndexByUserId, getUserByIdHandler);
 
 // Post Request with pay load
 router.post(
